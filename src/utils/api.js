@@ -2,13 +2,13 @@
  * Defines the base URL for the API.
  * The default values is overridden by the `API_BASE_URL` environment variable.
  */
-const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:5000";
+const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000';
 
 /**
  * Defines the default headers for these functions to work with `json-server`
  */
 const headers = new Headers();
-headers.append("Content-Type", "application/json");
+headers.append('Content-Type', 'application/json');
 
 /**
  * Fetch `json` from the specified URL and handle error status codes and ignore `AbortError`s
@@ -38,9 +38,29 @@ async function fetchJson(url, options) {
     }
     return payload.data;
   } catch (error) {
-    if (error.name !== "AbortError") {
+    if (error.name !== 'AbortError') {
       console.error(error.stack);
       return Promise.reject({ message: error.message });
     }
   }
+}
+
+export async function createObservation(observation, signal) {
+  const url = `${API_BASE_URL}/observations`;
+  const options = {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ data: observation }),
+    signal,
+  };
+  return await fetchJson(url, options);
+}
+
+export async function listObservations(signal) {
+  const url = `${API_BASE_URL}/observations`;
+  const options = {
+    headers,
+    signal,
+  };
+  return await fetchJson(url, options);
 }
